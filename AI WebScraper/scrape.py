@@ -1,14 +1,24 @@
-import selenium.webdriver as webdriver # Import the webdriver
-from selenium.webdriver.chrome.service import Service # Import the service
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 import time # Import the time module
 from bs4 import BeautifulSoup # Import the BeautifulSoup module
+
+def get_driver():
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--window-size=1920,1080")
+    options.binary_location = "/usr/bin/chromium"
+    service = Service("/usr/bin/chromedriver")
+    return webdriver.Chrome(service=service, options=options)
 
 def scrape_website(website):
     print("Launching Browser")
 
-    chrome_driver_path = "./chromedriver.exe" # Path to the chromedriver
-    options = webdriver.ChromeOptions() # Set the options
-    driver = webdriver.Chrome(service=Service(chrome_driver_path), options=options) # Launch the browser
+    driver = get_driver()
 
     try:
         driver.get(website)
