@@ -1,7 +1,6 @@
 import streamlit as st
 from scrape import (scrape_website, extract_body_content, clean_body_content, split_dom_content)
 from parse import parse_with_ollama
-st.write("KEY LOADED:", st.secrets.get("GROQ_API_KEY", "NOT FOUND")[:8])
 
 st.title('AI Web Scraper')
 
