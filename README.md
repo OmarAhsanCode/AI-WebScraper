@@ -1,39 +1,37 @@
 # AI Web Scraper
 
-An intelligent web scraping tool that combines web scraping capabilities with AI-powered content parsing. This application uses Selenium for web scraping and Ollama's LLaMA model for intelligent content extraction and analysis.
+An intelligent web scraping tool that combines web scraping capabilities with AI-powered content parsing. This application is optimized for deployment on Streamlit Cloud, utilizing a headless Chromium driver for web scraping and the Groq API (running `llama-3.1-8b-instant`) for intelligent content extraction and analysis.
 
 ## Features
 
-- **Web Scraping**: Automated website scraping using Selenium WebDriver
+- **Web Scraping**: Automated website scraping using Selenium WebDriver (configured for headless Linux execution on Streamlit Cloud)
 - **Content Cleaning**: Intelligent extraction and cleaning of webpage content
-- **AI-Powered Parsing**: Use natural language descriptions to extract specific information from scraped content
+- **AI-Powered Parsing**: Use natural language descriptions to extract specific information from scraped content via Groq API
 - **Interactive UI**: User-friendly Streamlit interface
 - **Batch Processing**: Handles large content by splitting into manageable chunks
 
 ## Technology Stack
 
 - **Frontend**: Streamlit
-- **Web Scraping**: Selenium WebDriver with Chrome
+- **Web Scraping**: Selenium WebDriver (with headless Chromium/chromedriver)
 - **Content Parsing**: BeautifulSoup4
-- **AI Processing**: LangChain with Ollama (LLaMA 3.1)
+- **AI Processing**: Groq Python SDK (LLaMA 3.1 8B Instant)
 - **Language**: Python 3.13
 
-## Prerequisites
+## Prerequisites / Configuration
 
-Before running the application, ensure you have:
+Before running the application:
 
-1. **Python 3.13** installed
-2. **Chrome browser** installed
-3. **ChromeDriver** (included in the project)
-4. **Ollama** installed with LLaMA 3.1 model
+1. **Groq API Key**: You need an API key from Groq.
+2. **Streamlit Secrets**:
+   - For local testing, create `AI WebScraper/.streamlit/secrets.toml` with the following content:
+     ```toml
+     GROQ_API_KEY = "your_actual_groq_api_key"
+     ```
+   - For Streamlit Cloud, configure `GROQ_API_KEY` under the app secrets settings.
 
-### Installing Ollama
-
-1. Download and install Ollama from [https://ollama.ai](https://ollama.ai)
-2. Install the LLaMA 3.1 model:
-   ```bash
-   ollama pull llama3.1
-   ```
+> [!NOTE]
+> The headless Selenium setup expects system-level Chromium and ChromeDriver installed (which are specified in `packages.txt` for Streamlit Cloud). Running the scraper locally on Windows/macOS may require adjusting the driver paths in `scrape.py` to match your local installation.
 
 ## Installation
 
@@ -45,20 +43,21 @@ Before running the application, ensure you have:
 
 2. **Create and activate virtual environment**:
    ```bash
-   python -m venv ai
-   ai\Scripts\activate
+   python -m venv venv
+   venv\Scripts\activate # On Linux/macOS use: source venv/bin/activate
    ```
 
 3. **Install dependencies**:
    ```bash
-   pip install -r requirements.txt
+   pip install -r "AI WebScraper/requirements.txt"
    ```
 
 ## Usage
 
 1. **Start the application**:
    ```bash
-   streamlit run "AI WebScraper/main.py"
+   cd "AI WebScraper"
+   streamlit run main.py
    ```
 
 2. **Using the Web Interface**:
@@ -72,14 +71,17 @@ Before running the application, ensure you have:
 
 ```
 AI-WebScraper/
-├── README.md
+├── packages.txt           # Installs Chromium & Chromedriver on Streamlit Cloud
+├── README.md              # Documentation
+├── .gitignore             # Git ignored files
+├── .gitattributes         # Git attributes
 └── AI WebScraper/
-    ├── main.py          # Streamlit application entry point
-    ├── scrape.py        # Web scraping functionality
-    ├── parse.py         # AI-powered content parsing
-    ├── requirements.txt # Python dependencies
-    ├── chromedriver.exe # Chrome WebDriver
-    └── ai/              # Virtual environment
+    ├── main.py            # Streamlit application entry point
+    ├── scrape.py          # Web scraping functionality (headless Chrome setup)
+    ├── parse.py           # AI-powered content parsing using Groq
+    ├── requirements.txt   # Python dependencies
+    └── .streamlit/
+        └── secrets.toml   # Streamlit secrets (local API key, git-ignored)
 ```
 
 ## Core Components
@@ -90,56 +92,22 @@ AI-WebScraper/
 - Coordinates scraping and parsing operations
 
 ### `scrape.py`
-- **`scrape_website()`**: Uses Selenium to fetch webpage content
-- **`extract_body_content()`**: Extracts body content from HTML
-- **`clean_body_content()`**: Removes scripts, styles, and cleans text
-- **`split_dom_content()`**: Splits large content into 6000-character chunks
+- **`get_driver()`**: Configures Selenium with headless options and specifies binary paths suitable for Streamlit Cloud.
+- **`scrape_website()`**: Uses Selenium to fetch webpage content safely inside try/finally blocks.
+- **`extract_body_content()`**: Extracts body content from HTML.
+- **`clean_body_content()`**: Removes scripts, styles, and cleans text.
+- **`split_dom_content()`**: Splits large content into 6000-character chunks.
 
 ### `parse.py`
-- **`parse_with_ollama()`**: Uses LangChain and Ollama for AI-powered parsing
-- Processes content chunks and extracts information based on natural language descriptions
-
-## Example Use Cases
-
-- **Product Information**: Extract product names, prices, and descriptions from e-commerce sites
-- **News Articles**: Parse headlines, authors, and publication dates from news websites
-- **Contact Information**: Extract email addresses, phone numbers, and addresses
-- **Social Media**: Parse user profiles, posts, and engagement metrics
-- **Research Data**: Extract specific data points from research papers or reports
-
-## Configuration
-
-The application uses the following default settings:
-
-- **Chrome Driver**: `./chromedriver.exe`
-- **AI Model**: LLaMA 3.1 via Ollama
-- **Content Chunk Size**: 6000 characters
-- **Wait Time**: 10 seconds for page loading
-
-## Troubleshooting
-
-### Common Issues
-
-1. **ChromeDriver Issues**:
-   - Ensure Chrome browser is installed
-   - Update ChromeDriver if Chrome version has changed
-   - Check ChromeDriver path in `scrape.py`
-
-2. **Ollama Connection Issues**:
-   - Verify Ollama is running: `ollama serve`
-   - Confirm LLaMA 3.1 model is installed: `ollama list`
-
-3. **Streamlit Issues**:
-   - Check if port 8501 is available
-   - Try running with different port: `streamlit run main.py --server.port 8502`
+- **`parse_with_ollama()`**: Uses Groq client to call `llama-3.1-8b-instant` for AI-powered parsing.
+- Processes content chunks and extracts information based on natural language descriptions.
 
 ## Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+4. Submit a pull request
 
 ## License
 
@@ -148,4 +116,3 @@ This project is open source and available under the [MIT License](LICENSE).
 ## Disclaimer
 
 This tool is for educational and research purposes. Always respect website terms of service and robots.txt files when scraping. Be mindful of rate limiting and avoid overloading servers.
-
