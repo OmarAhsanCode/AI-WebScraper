@@ -24,7 +24,7 @@ Before running the application:
 
 1. **Groq API Key**: You need an API key from Groq.
 2. **Streamlit Secrets**:
-   - For local testing, create `AI WebScraper/.streamlit/secrets.toml` with the following content:
+   - For local testing, create `app/.streamlit/secrets.toml` with the following content:
      ```toml
      GROQ_API_KEY = "your_actual_groq_api_key"
      ```
@@ -49,14 +49,14 @@ Before running the application:
 
 3. **Install dependencies**:
    ```bash
-   pip install -r "AI WebScraper/requirements.txt"
+   pip install -r "app/requirements.txt"
    ```
 
 ## Usage
 
 1. **Start the application**:
    ```bash
-   cd "AI WebScraper"
+   cd "app"
    streamlit run main.py
    ```
 
@@ -72,10 +72,11 @@ Before running the application:
 ```
 AI-WebScraper/
 ├── packages.txt           # Installs Chromium & Chromedriver on Streamlit Cloud
+├── requirements.txt       # Python dependencies (root-level for deploy)
 ├── README.md              # Documentation
 ├── .gitignore             # Git ignored files
 ├── .gitattributes         # Git attributes
-└── AI WebScraper/
+└── app/
     ├── main.py            # Streamlit application entry point
     ├── scrape.py          # Web scraping functionality (headless Chrome setup)
     ├── parse.py           # AI-powered content parsing using Groq

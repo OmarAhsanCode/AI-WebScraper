@@ -1,5 +1,5 @@
 .streamlit/secrets.toml
-AI WebScraper/.streamlit/secrets.toml
+app/.streamlit/secrets.toml
 *.exe
 __pycache__/
 *.pyc
