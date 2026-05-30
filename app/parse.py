@@ -1,9 +1,8 @@
 from groq import Groq
 import streamlit as st
 
-client = Groq(api_key=st.secrets["GROQ_API_KEY"])
-
 def parse_with_ollama(dom_chunks, parse_description):
+    client = Groq(api_key=st.secrets["GROQ_API_KEY"])
     results = []
     for i, chunk in enumerate(dom_chunks):
         response = client.chat.completions.create(
